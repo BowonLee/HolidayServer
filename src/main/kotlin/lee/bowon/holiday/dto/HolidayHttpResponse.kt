@@ -20,8 +20,21 @@ data class HolidayResponseBody(
 
 data class HolidayResponseItem(
     val dataKind: String,
+    val dateName: String,
     val isHoliday: String,
     val locdate: String,
     val seq: Int
 )
+
+data class HolidayHttpResponseError(
+    val cmmMsgHeader: HolidayHttpResponseErrorItem
+)
+
+data class HolidayHttpResponseErrorItem(
+    val errMsg: String,
+    val returnAuthMsg: String,
+    val returnReasonCode: String,
+
+    )
+
 
