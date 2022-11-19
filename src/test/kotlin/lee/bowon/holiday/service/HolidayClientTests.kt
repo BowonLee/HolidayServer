@@ -18,11 +18,11 @@ class HolidayClientTests {
 
     @Test
     fun requestTest() {
-        val request = HolidayHttpRequest(2022, 10)
+        val request = HolidayHttpRequest("2022", "10")
 
         val result = this.holidayClient.getHolidayData(request)
 
-        compareValues(result.body.toString(), "")
+        compareValues(result.toString(), "")
 //        LoggerFactory.getILoggerFactory().getLogger().debug(request.)
 //
 //        compareValues(result, "")
