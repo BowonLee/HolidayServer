@@ -7,10 +7,8 @@ import lee.bowon.holiday.dto.HolidayHttpResponseError
  */
 class HolidayAPIRequestFailException: Exception {
 
-//    constructor(): super()
     constructor(message: String): super(message)
     constructor(error: HolidayHttpResponseError): this(error.cmmMsgHeader.errMsg) {
         println(error)
     }
-
 }
