@@ -2,28 +2,22 @@ package lee.bowon.holiday.service
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature
-import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
-import com.fasterxml.jackson.module.kotlin.jacksonMapperBuilder
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import lee.bowon.holiday.constant.API_KEY
 import lee.bowon.holiday.constant.END_POINT_URL
-import lee.bowon.holiday.dto.HolidayHttpRequest
-import lee.bowon.holiday.dto.HolidayHttpResponseError
-import lee.bowon.holiday.dto.HolidayResponse
-import lee.bowon.holiday.dto.HolidayResponseItem
+import lee.bowon.holiday.dto.XmlApiRequest
+import lee.bowon.holiday.dto.XmlApiResponseError
+import lee.bowon.holiday.dto.XmlApiResponse
+import lee.bowon.holiday.dto.XmlApiResponseItem
 import lee.bowon.holiday.exception.HolidayAPIRequestFailException
-import org.apache.juli.logging.Log
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.*
 import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.stereotype.Service
 import org.springframework.util.LinkedMultiValueMap
 import org.springframework.util.MultiValueMap
 import org.springframework.web.client.RestTemplate
-import org.springframework.web.client.getForEntity
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 import java.nio.charset.StandardCharsets
@@ -32,16 +26,16 @@ import java.nio.charset.StandardCharsets
  * 공식 API 센터를 통해 휴일 정보를 받아온다.
  */
 @Service
-class HolidayClient() {
+class HolidayClient {
 
-    fun getHolidayData(request: HolidayHttpRequest): List<HolidayResponseItem> {
+    fun getHolidayData(request: XmlApiRequest): List<XmlApiResponseItem> {
 
         val rawResponse = requestData(request)
 
         return parseData(rawResponse.body!!).body.items.item
     }
 
-    private fun parseData(xml :String): HolidayResponse {
+    private fun parseData(xml :String): XmlApiResponse {
         if(isResponseSuccess(xml)) {
             return parseSuccessData(xml)
         } else {
@@ -54,15 +48,13 @@ class HolidayClient() {
         return !xml.contains("errMsg")
     }
 
-    private fun parseSuccessData(xml: String): HolidayResponse {
+    private fun parseSuccessData(xml: String): XmlApiResponse {
         val mapper = XmlMapper(JacksonXmlModule().apply {
             setDefaultUseWrapper(false)
         }).registerKotlinModule().configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-
-        println(xml)
-        return mapper.readValue(xml, HolidayResponse::class.java)
+        return mapper.readValue(xml, XmlApiResponse::class.java)
     }
 
     private fun onResponseFail(xml: String): Throwable {
@@ -71,13 +63,12 @@ class HolidayClient() {
         }).registerKotlinModule().configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-        println(xml)
-        val result = mapper.readValue(xml, HolidayHttpResponseError::class.java)
+        val result = mapper.readValue(xml, XmlApiResponseError::class.java)
 
         throw HolidayAPIRequestFailException(result)
     }
 
-    private fun requestData(request: HolidayHttpRequest): ResponseEntity<String> {
+    private fun requestData(request: XmlApiRequest): ResponseEntity<String> {
         val restTemplate = RestTemplate()
         val httpHeaders = getHeader()
         val uri = generateUri(request)
@@ -95,7 +86,7 @@ class HolidayClient() {
 
     }
 
-    private fun generateUri(request: HolidayHttpRequest): URI{
+    private fun generateUri(request: XmlApiRequest): URI{
         val httpBody: MultiValueMap<String, String> = LinkedMultiValueMap()
 
         httpBody["serviceKey"] = API_KEY

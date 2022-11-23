@@ -1,10 +1,9 @@
 package lee.bowon.holiday.service
 
-import lee.bowon.holiday.dto.HolidayHttpRequest
-import lee.bowon.holiday.dto.HolidayResponseItem
+import lee.bowon.holiday.dto.XmlApiRequest
+import lee.bowon.holiday.dto.XmlApiResponseItem
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertAll
 import org.springframework.beans.factory.annotation.Autowired
 
 
@@ -21,7 +20,7 @@ class HolidayClientTests {
 
     @Test
     fun response_empty() {
-        val request = HolidayHttpRequest("2022", "11")
+        val request = XmlApiRequest("2022", "11")
 
         val result = this.holidayClient.getHolidayData(request)
 
@@ -30,11 +29,11 @@ class HolidayClientTests {
 
     @Test
     fun response_ok() {
-        val request = HolidayHttpRequest("2022", "10")
+        val request = XmlApiRequest("2022", "10")
 
         val result = this.holidayClient.getHolidayData(request)
 
-        val actual = HolidayResponseItem(dateName = "개천절", dateKind = "01", isHoliday = "Y", locdate = "20221003", seq = 1 )
+        val actual = XmlApiResponseItem(dateName = "개천절", dateKind = "01", isHoliday = "Y", locdate = "20221003", seq = 1 )
 
         assertEquals(result[0],actual)
         assertEquals(result.size , 3)
