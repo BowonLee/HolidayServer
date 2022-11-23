@@ -11,7 +11,7 @@ import lee.bowon.holiday.dto.XmlApiRequest
 import lee.bowon.holiday.dto.XmlApiResponseError
 import lee.bowon.holiday.dto.XmlApiResponse
 import lee.bowon.holiday.dto.XmlApiResponseItem
-import lee.bowon.holiday.exception.HolidayAPIRequestFailException
+import lee.bowon.holiday.exception.XmlApiRequestFailException
 import org.springframework.http.*
 import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.stereotype.Service
@@ -65,7 +65,7 @@ class HolidayClient {
 
         val result = mapper.readValue(xml, XmlApiResponseError::class.java)
 
-        throw HolidayAPIRequestFailException(result)
+        throw XmlApiRequestFailException(result)
     }
 
     private fun requestData(request: XmlApiRequest): ResponseEntity<String> {
@@ -90,8 +90,8 @@ class HolidayClient {
         val httpBody: MultiValueMap<String, String> = LinkedMultiValueMap()
 
         httpBody["serviceKey"] = API_KEY
-        httpBody["solYear"] = request.solYear
-        httpBody["solMonth"] = request.solMonth
+        httpBody["solYear"] = request.solYear.toString()
+        httpBody["solMonth"] = request.solMonth.toString()
 
         return UriComponentsBuilder.fromHttpUrl(END_POINT_URL).queryParams(httpBody).build(true).toUri()
     }
