@@ -20,7 +20,7 @@ class HolidayClientTests {
 
     @Test
     fun response_empty() {
-        val request = XmlApiRequest("2022", "11")
+        val request = XmlApiRequest(2022, 11)
 
         val result = this.holidayClient.getHolidayData(request)
 
@@ -29,7 +29,7 @@ class HolidayClientTests {
 
     @Test
     fun response_ok() {
-        val request = XmlApiRequest("2022", "10")
+        val request = XmlApiRequest(2022, 10)
 
         val result = this.holidayClient.getHolidayData(request)
 
