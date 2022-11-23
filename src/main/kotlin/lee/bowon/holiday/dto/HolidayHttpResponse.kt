@@ -12,14 +12,14 @@ data class HolidayResponseHeader(
 )
 
 data class HolidayResponseBody(
-    val items: Items,
+    val items: HolidayResponseItems = HolidayResponseItems(),
     val numOfRows: Int,
     val pageNo: Int,
     val totalCount: Int
 )
 
-data class Items(
-    val item: List<HolidayResponseItem>
+data class HolidayResponseItems(
+    val item: List<HolidayResponseItem> = listOf()
 )
 
 data class HolidayResponseItem(

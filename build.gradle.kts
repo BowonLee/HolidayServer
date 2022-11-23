@@ -5,6 +5,7 @@ plugins {
 	id("io.spring.dependency-management") version "1.0.15.RELEASE"
 	kotlin("jvm") version "1.6.21"
 	kotlin("plugin.spring") version "1.6.21"
+	kotlin("plugin.jpa") version "1.5.21"
 }
 
 group = "lee.bowon"
@@ -15,6 +16,13 @@ repositories {
 	mavenCentral()
 }
 
+
+allOpen {
+	annotation("javax.persistence.Entity") // 3
+	annotation("javax.persistence.MappedSuperclass") // 4
+	annotation("javax.persistence.Embeddable") // 5
+}
+
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -22,10 +30,13 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml
 	implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.14.0")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
 	runtimeOnly("com.mysql:mysql-connector-j")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
+
+
 
 tasks.withType<KotlinCompile> {
 	kotlinOptions {
