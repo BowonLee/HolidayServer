@@ -13,8 +13,6 @@ class XmlResponseTest {
 
     @Test
     fun parseHolidayTest() {
-
-
         val temp = XmlApiResponseItem(dateName = "개천절", dateKind = "01", isHoliday = "Y", locdate = "20221003", seq = 1 )
 
         Assertions.assertEquals(temp.toHoliday().isHoliday, true )

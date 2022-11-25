@@ -29,7 +29,6 @@ import java.nio.charset.StandardCharsets
 class HolidayClient {
 
     fun getHolidayData(request: XmlApiRequest): List<XmlApiResponseItem> {
-
         val rawResponse = requestData(request)
 
         return parseData(rawResponse.body!!).body.items.item
@@ -75,7 +74,6 @@ class HolidayClient {
         val httpEntity = HttpEntity<HttpHeaders>(httpHeaders)
 
         restTemplate.messageConverters.add(0,StringHttpMessageConverter(StandardCharsets.UTF_8))
-
         return restTemplate.exchange(uri, HttpMethod.GET, httpEntity, String::class.java)
     }
 
@@ -91,7 +89,7 @@ class HolidayClient {
 
         httpBody["serviceKey"] = API_KEY
         httpBody["solYear"] = request.solYear.toString()
-        httpBody["solMonth"] = request.solMonth.toString()
+        httpBody["solMonth"] = request.solMonth.toString().padStart(2,'0')
 
         return UriComponentsBuilder.fromHttpUrl(END_POINT_URL).queryParams(httpBody).build(true).toUri()
     }
