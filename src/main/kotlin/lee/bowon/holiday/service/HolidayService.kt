@@ -4,6 +4,8 @@ import lee.bowon.holiday.dto.HolidayRequest
 import lee.bowon.holiday.entity.Holiday
 import org.springframework.stereotype.Service
 import java.time.LocalDate
+import java.util.logging.Level
+import java.util.logging.Logger
 
 @Service
 class HolidayService(
@@ -21,21 +23,24 @@ class HolidayService(
      */
     fun updateHolidayData() {
         kotlin.runCatching { updateListForTwoYear() }
-
     }
 
     /**
      * 휴일 정보를 가져온다.
-     * 1. 캐시정보 조회하여 획득
-     * 2. 캐시가 없을 시 데이터베이스 획득
-     * 3. 정보반환 후 해당 정보 캐시 등록
+     * 저장된 정보가 없을 시 데이터 셋팅 후 재시도 하도록 한다.
      */
-    fun getHolidayList() {
+    fun getHolidayList(): List<Holiday> {
+        val holidayLsit = holidayStorageService.getHolidays()
 
+        return holidayLsit.ifEmpty {
+            updateListForTwoYear()
+            getHolidayList()
+        }
     }
 
     private fun updateListForTwoYear() {
 
+        Logger.getLogger("test").log(Level.INFO,"update time : ${LocalDate.now()}")
         var date = LocalDate.of(LocalDate.now().year,1,1)
         val listForTwoYears = mutableListOf<Holiday>()
         for (i in 1..24) {
@@ -44,12 +49,6 @@ class HolidayService(
         }
 
         holidayStorageService.storageHolidayDataOfTwoYear(listForTwoYears)
-        updateDataToCache()
-    }
-
-
-    private fun updateDataToCache() {
-
     }
 
     private fun getHolidayListPerMonth(year: Int, month: Int): List<Holiday>
