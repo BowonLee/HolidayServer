@@ -1,17 +1,16 @@
 package lee.bowon.holiday.service
 
+
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import lee.bowon.holiday.constant.API_KEY
 import lee.bowon.holiday.constant.END_POINT_URL
-import lee.bowon.holiday.dto.XmlApiRequest
-import lee.bowon.holiday.dto.XmlApiResponseError
-import lee.bowon.holiday.dto.XmlApiResponse
-import lee.bowon.holiday.dto.XmlApiResponseItem
-import lee.bowon.holiday.exception.XmlApiRequestFailException
+import lee.bowon.holiday.dto.*
+import lee.bowon.holiday.exception.HolidayApiRequestFailException
 import org.springframework.http.*
 import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.stereotype.Service
@@ -28,46 +27,45 @@ import java.nio.charset.StandardCharsets
 @Service
 class HolidayClient {
 
-    fun getHolidayData(request: XmlApiRequest): List<XmlApiResponseItem> {
+    fun getHolidayData(request: HolidayRequest): List<HolidayApiResponseItem> {
         val rawResponse = requestData(request)
 
         return parseData(rawResponse.body!!).body.items.item
     }
 
-    private fun parseData(xml :String): XmlApiResponse {
-        if(isResponseSuccess(xml)) {
-            return parseSuccessData(xml)
+    private fun parseData(response :String): HolidayApiResponse {
+        if(isResponseSuccess(response)) {
+            return parseSuccessData(response)
         } else {
-            throw onResponseFail(xml)
+            throw onRequestFail(response)
         }
-
     }
 
-    private fun isResponseSuccess(xml: String) :Boolean {
-        return !xml.contains("errMsg")
+    private fun isResponseSuccess(json: String) :Boolean {
+        return !json.contains("errMsg")
     }
 
-    private fun parseSuccessData(xml: String): XmlApiResponse {
-        val mapper = XmlMapper(JacksonXmlModule().apply {
+    private fun parseSuccessData(json: String): HolidayApiResponse {
+        val mapper = jacksonObjectMapper()
+
+        return mapper.readValue(json, HolidayApiResponseWrapper::class.java ).response
+    }
+
+    /**
+     * 에러 발생 시 xml 으로 반환된다.
+     */
+    private fun onRequestFail(xml: String): HolidayApiRequestFailException {
+        val xmlDeserializer = XmlMapper(JacksonXmlModule().apply {
             setDefaultUseWrapper(false)
-        }).registerKotlinModule().configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+        }).registerKotlinModule()
+            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-        return mapper.readValue(xml, XmlApiResponse::class.java)
+        return HolidayApiRequestFailException(xmlDeserializer.readValue(xml, HolidayApiResponseError::class.java))
     }
 
-    private fun onResponseFail(xml: String): Throwable {
-        val mapper = XmlMapper(JacksonXmlModule().apply {
-            setDefaultUseWrapper(false)
-        }).registerKotlinModule().configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
-        val result = mapper.readValue(xml, XmlApiResponseError::class.java)
-
-        throw XmlApiRequestFailException(result)
-    }
-
-    private fun requestData(request: XmlApiRequest): ResponseEntity<String> {
+    private fun requestData(request: HolidayRequest): ResponseEntity<String> {
         val restTemplate = RestTemplate()
         val httpHeaders = getHeader()
         val uri = generateUri(request)
@@ -84,12 +82,13 @@ class HolidayClient {
 
     }
 
-    private fun generateUri(request: XmlApiRequest): URI{
+    private fun generateUri(request: HolidayRequest): URI{
         val httpBody: MultiValueMap<String, String> = LinkedMultiValueMap()
 
-        httpBody["serviceKey"] = API_KEY
+        httpBody["serviceKey"] = API_KEY+"DD"
         httpBody["solYear"] = request.solYear.toString()
         httpBody["solMonth"] = request.solMonth.toString().padStart(2,'0')
+        httpBody["_type"] = "json"
 
         return UriComponentsBuilder.fromHttpUrl(END_POINT_URL).queryParams(httpBody).build(true).toUri()
     }

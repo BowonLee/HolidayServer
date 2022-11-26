@@ -1,8 +1,7 @@
 package lee.bowon.holiday.service
 
-import lee.bowon.holiday.dto.XmlApiRequest
+import lee.bowon.holiday.dto.HolidayRequest
 import lee.bowon.holiday.entity.Holiday
-import lee.bowon.holiday.repository.HolidayRepository
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 
@@ -21,7 +20,8 @@ class HolidayService(
      * 2. 캐시에 정보 저장
      */
     fun updateHolidayData() {
-        updateListForTwoYear()
+        kotlin.runCatching { updateListForTwoYear() }
+
     }
 
     /**
@@ -53,6 +53,6 @@ class HolidayService(
     }
 
     private fun getHolidayListPerMonth(year: Int, month: Int): List<Holiday>
-            = holidayClient.getHolidayData(XmlApiRequest(year,month)).map { it.toHoliday() }
+            = holidayClient.getHolidayData(HolidayRequest(year,month)).map { it.toHoliday() }
 
 }

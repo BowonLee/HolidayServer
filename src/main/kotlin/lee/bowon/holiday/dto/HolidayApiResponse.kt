@@ -5,28 +5,32 @@ import lee.bowon.holiday.enum.DateKind
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-data class XmlApiResponse(
-    val header: XmlApiResponseHeader,
-    val body: XmlApiResponseBody
+data class HolidayApiResponseWrapper(
+    val response: HolidayApiResponse
 )
 
-data class XmlApiResponseHeader(
+data class HolidayApiResponse(
+    val header: HolidayApiResponseHeader,
+    val body: HolidayApiResponseBody
+)
+
+data class HolidayApiResponseHeader(
     val resultCode: String,
     val resultMsg: String
 )
 
-data class XmlApiResponseBody(
-    val items: XmlApiResponseItems = XmlApiResponseItems(),
+data class HolidayApiResponseBody(
+    val items: HolidayApiResponseItems = HolidayApiResponseItems(),
     val numOfRows: Int,
     val pageNo: Int,
     val totalCount: Int
 )
 
-data class XmlApiResponseItems(
-    val item: List<XmlApiResponseItem> = listOf()
+data class HolidayApiResponseItems(
+    val item: List<HolidayApiResponseItem> = listOf()
 )
 
-data class XmlApiResponseItem(
+data class HolidayApiResponseItem(
     val dateKind: String,
     val dateName: String,
     val isHoliday: String,
@@ -42,11 +46,11 @@ data class XmlApiResponseItem(
     }
 }
 
-data class XmlApiResponseError(
-    val cmmMsgHeader: XmlApiResponseErrorItem
+data class HolidayApiResponseError(
+    val cmmMsgHeader: HolidayApiResponseErrorItem
 )
 
-data class XmlApiResponseErrorItem(
+data class HolidayApiResponseErrorItem(
     val errMsg: String,
     val returnAuthMsg: String,
     val returnReasonCode: String,

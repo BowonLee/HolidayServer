@@ -3,6 +3,7 @@ package lee.bowon.holiday.service
 import lee.bowon.holiday.entity.Holiday
 import lee.bowon.holiday.repository.HolidayRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class HolidayStorageService(private val holidayRepository: HolidayRepository) {
@@ -15,6 +16,7 @@ class HolidayStorageService(private val holidayRepository: HolidayRepository) {
      * 변경사항이 있을 때만 업로드
      * 변경사항이 없느 경우 업로드 하지 않음
      */
+    @Transactional
     fun storageHolidayDataOfTwoYear(holidayList: List<Holiday>) {
         if (isDataChanged(holidayList)) {
             holidayRepository.deleteAll()
