@@ -85,7 +85,7 @@ class HolidayClient {
     private fun generateUri(request: HolidayRequest): URI{
         val httpBody: MultiValueMap<String, String> = LinkedMultiValueMap()
 
-        httpBody["serviceKey"] = API_KEY+"DD"
+        httpBody["serviceKey"] = API_KEY
         httpBody["solYear"] = request.solYear.toString()
         httpBody["solMonth"] = request.solMonth.toString().padStart(2,'0')
         httpBody["_type"] = "json"
