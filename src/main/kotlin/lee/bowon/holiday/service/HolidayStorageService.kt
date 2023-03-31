@@ -31,7 +31,7 @@ class HolidayStorageService(private val holidayRepository: HolidayRepository) {
     }
 
     private fun isDataChanged(holidayList: List<Holiday>): Boolean {
-        return holidayRepository.findAll() !== holidayList
+        return holidayRepository.findAll() != holidayList
     }
 
 

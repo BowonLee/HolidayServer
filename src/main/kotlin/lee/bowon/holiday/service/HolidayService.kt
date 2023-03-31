@@ -2,6 +2,7 @@ package lee.bowon.holiday.service
 
 import lee.bowon.holiday.dto.HolidayRequest
 import lee.bowon.holiday.entity.Holiday
+import org.springframework.cache.CacheManager
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.util.logging.Level
@@ -10,7 +11,8 @@ import java.util.logging.Logger
 @Service
 class HolidayService(
     private val holidayClient: HolidayClient,
-    private val holidayStorageService: HolidayStorageService
+    private val holidayStorageService: HolidayStorageService,
+    private val cacheManager: CacheManager
 ) {
 
     /**
@@ -30,16 +32,16 @@ class HolidayService(
      * 저장된 정보가 없을 시 데이터 셋팅 후 재시도 하도록 한다.
      */
     fun getHolidayList(): List<Holiday> {
-        val holidayLsit = holidayStorageService.getHolidays()
+        val holidayList = holidayStorageService.getHolidays()
 
-        return holidayLsit.ifEmpty {
+        return holidayList.ifEmpty {
             updateListForTwoYear()
-            getHolidayList()
         }
     }
 
-    private fun updateListForTwoYear() {
+    private fun updateListForTwoYear(): List<Holiday> {
 
+        cacheManager.getCache("holidays")?.clear()
         Logger.getLogger("test").log(Level.INFO,"update time : ${LocalDate.now()}")
         var date = LocalDate.of(LocalDate.now().year,1,1)
         val listForTwoYears = mutableListOf<Holiday>()
@@ -49,6 +51,8 @@ class HolidayService(
         }
 
         holidayStorageService.storageHolidayDataOfTwoYear(listForTwoYears)
+
+        return listForTwoYears;
     }
 
     private fun getHolidayListPerMonth(year: Int, month: Int): List<Holiday>

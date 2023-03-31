@@ -3,6 +3,7 @@ package lee.bowon.holiday.service
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.databind.cfg.CoercionConfig
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -11,6 +12,7 @@ import lee.bowon.holiday.constant.API_KEY
 import lee.bowon.holiday.constant.END_POINT_URL
 import lee.bowon.holiday.dto.*
 import lee.bowon.holiday.exception.HolidayApiRequestFailException
+import org.apache.juli.logging.Log
 import org.springframework.http.*
 import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.stereotype.Service
@@ -46,9 +48,10 @@ class HolidayClient {
     }
 
     private fun parseSuccessData(json: String): HolidayApiResponse {
-        val mapper = jacksonObjectMapper()
-
-        return mapper.readValue(json, HolidayApiResponseWrapper::class.java ).response
+        val mapper = jacksonObjectMapper().registerKotlinModule()
+            .enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT)
+            .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
+        return mapper.readValue(json, HolidayApiResponseWrapper::class.java).response
     }
 
     /**

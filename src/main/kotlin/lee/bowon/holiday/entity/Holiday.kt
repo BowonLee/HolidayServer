@@ -1,9 +1,10 @@
 package lee.bowon.holiday.entity
 
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
 import java.time.LocalDate
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.Id
+
 
 
 @Entity
@@ -11,9 +12,9 @@ data class Holiday(
     @Id
     @Column(nullable = false)
     val date: LocalDate,
-    @Column(length = 10)
+    @Column(length = 20)
     val dateName: String,
-    @Column(length = 5)
+    @Column(length = 10)
     val dateKind: String,
     val isHoliday: Boolean = true
     )

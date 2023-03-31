@@ -20,7 +20,7 @@ class HolidayClientTests {
 
     @Test
     fun response_empty() {
-        val request = HolidayRequest(2022, 11)
+        val request = HolidayRequest(2023, 1)
 
         val result = this.holidayClient.getHolidayData(request)
 

@@ -1,5 +1,9 @@
 package lee.bowon.holiday.dto
 
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonSetter
+import com.fasterxml.jackson.annotation.Nulls
+
 import lee.bowon.holiday.entity.Holiday
 import lee.bowon.holiday.enum.DateKind
 import java.time.LocalDate
@@ -20,10 +24,12 @@ data class HolidayApiResponseHeader(
 )
 
 data class HolidayApiResponseBody(
+    @JsonProperty(value = "items")
+    @JsonSetter(nulls = Nulls.AS_EMPTY)
     val items: HolidayApiResponseItems = HolidayApiResponseItems(),
-    val numOfRows: Int,
-    val pageNo: Int,
-    val totalCount: Int
+    val numOfRows: Int = 0,
+    val pageNo: Int = 0,
+    val totalCount: Int = 0
 )
 
 data class HolidayApiResponseItems(
