@@ -28,10 +28,12 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	// https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml
-	implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.14.0")
+
+	implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.14.2")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation ("org.springframework.boot:spring-boot-starter-cache")
+
+	implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
 
 	runtimeOnly("com.mysql:mysql-connector-j")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")

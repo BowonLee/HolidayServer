@@ -11,6 +11,7 @@ import com.fasterxml.jackson.module.kotlin.registerKotlinModule
 import lee.bowon.holiday.constant.API_KEY
 import lee.bowon.holiday.constant.END_POINT_URL
 import lee.bowon.holiday.dto.*
+import lee.bowon.holiday.entity.Holiday
 import lee.bowon.holiday.exception.HolidayApiRequestFailException
 import org.apache.juli.logging.Log
 import org.springframework.http.*
@@ -29,10 +30,12 @@ import java.nio.charset.StandardCharsets
 @Service
 class HolidayClient {
 
-    fun getHolidayData(request: HolidayRequest): List<HolidayApiResponseItem> {
+    fun getHolidayData(request: HolidayRequest): List<Holiday> {
         val rawResponse = requestData(request)
 
-        return parseData(rawResponse.body!!).body.items.item
+        return parseData(rawResponse.body!!).body.items.item.map {
+            it.toHoliday()
+        }
     }
 
     private fun parseData(response :String): HolidayApiResponse {

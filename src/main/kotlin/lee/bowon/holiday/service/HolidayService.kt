@@ -1,5 +1,7 @@
 package lee.bowon.holiday.service
 
+import kotlinx.coroutines.*
+import lee.bowon.holiday.config.HolidayCacheConfig
 import lee.bowon.holiday.dto.HolidayRequest
 import lee.bowon.holiday.entity.Holiday
 import org.springframework.cache.CacheManager
@@ -12,7 +14,7 @@ import java.util.logging.Logger
 class HolidayService(
     private val holidayClient: HolidayClient,
     private val holidayStorageService: HolidayStorageService,
-    private val cacheManager: CacheManager
+    private val cacheConfig: HolidayCacheConfig
 ) {
 
     /**
@@ -41,21 +43,32 @@ class HolidayService(
 
     private fun updateListForTwoYear(): List<Holiday> {
 
-        cacheManager.getCache("holidays")?.clear()
-        Logger.getLogger("test").log(Level.INFO,"update time : ${LocalDate.now()}")
-        var date = LocalDate.of(LocalDate.now().year,1,1)
-        val listForTwoYears = mutableListOf<Holiday>()
-        for (i in 1..24) {
-            listForTwoYears.addAll(getHolidayListPerMonth(date.year, date.monthValue))
-            date = date.plusMonths(1)
+
+        cacheConfig.cacheManager().getCache("holidayList")?.clear()
+
+        Logger.getLogger("test").log(Level.INFO, "update time : ${LocalDate.now()}")
+        val nowYear = LocalDate.now().year
+        val listForTwoYears = mutableSetOf<Holiday>()
+
+        runBlocking {
+            coroutineScope {
+                ( 0..23).map {
+                    async(Dispatchers.Default) {
+                        listForTwoYears.addAll(
+                            holidayClient.getHolidayData(
+                                HolidayRequest(nowYear + it/13, it%12 + 1)
+                            )
+                        )
+                    }
+                }
+            }.awaitAll()
+            holidayStorageService.updateHolidayDataOfTwoYear(listForTwoYears.toList())
         }
 
-        holidayStorageService.storageHolidayDataOfTwoYear(listForTwoYears)
-
-        return listForTwoYears;
+        return listForTwoYears.toList()
     }
 
     private fun getHolidayListPerMonth(year: Int, month: Int): List<Holiday>
-            = holidayClient.getHolidayData(HolidayRequest(year,month)).map { it.toHoliday() }
+            = holidayClient.getHolidayData(HolidayRequest(year,month))
 
 }

@@ -18,7 +18,7 @@ class HolidayStorageService(private val holidayRepository: HolidayRepository) {
      * 변경사항이 없는 경우 업로드 하지 않음
      */
     @Transactional
-    fun storageHolidayDataOfTwoYear(holidayList: List<Holiday>) {
+    fun updateHolidayDataOfTwoYear(holidayList: List<Holiday>) {
         if (isDataChanged(holidayList)) {
             holidayRepository.deleteAll()
             holidayRepository.saveAll(holidayList)

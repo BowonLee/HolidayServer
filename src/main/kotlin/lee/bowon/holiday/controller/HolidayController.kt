@@ -22,4 +22,12 @@ class HolidayController(private val holidayService: HolidayService) {
     fun update() {
         holidayService.updateHolidayData()
     }
+
+    /**
+     * 서버에서 받아야 하는 정보들의 최종 업데이트 일자
+     */
+    @PostMapping("meta")
+    fun metaData() {
+
+    }
 }
