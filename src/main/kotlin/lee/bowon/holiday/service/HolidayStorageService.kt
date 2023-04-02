@@ -2,12 +2,15 @@ package lee.bowon.holiday.service
 
 import lee.bowon.holiday.entity.Holiday
 import lee.bowon.holiday.entity.LastUpdateDateInfo
+import lee.bowon.holiday.enum.DataStorageType
 import lee.bowon.holiday.repository.HolidayRepository
 import lee.bowon.holiday.repository.LastUpdateDateInfoRepository
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.util.*
 import java.util.logging.Level
 import java.util.logging.Logger
 
@@ -30,13 +33,17 @@ class HolidayStorageService(
         if (isDataChanged(holidayList)) {
             holidayRepository.deleteAll()
             holidayRepository.saveAll(holidayList)
-            lastUpdateDateInfoRepository.save(LastUpdateDateInfo("holiday",LocalDate.now()))
+            lastUpdateDateInfoRepository.save(LastUpdateDateInfo(DataStorageType.HOLIDAY.name, LocalDateTime.now()))
         }
     }
 
     @Cacheable("holidays")
     fun getHolidays(): List<Holiday> {
         return holidayRepository.findAll()
+    }
+
+    fun getLastUpdate(): Optional<LastUpdateDateInfo> {
+        return lastUpdateDateInfoRepository.findByTypeName(DataStorageType.HOLIDAY.name)
     }
 
     private fun isDataChanged(holidayList: List<Holiday>): Boolean {

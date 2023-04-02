@@ -2,6 +2,7 @@ package lee.bowon.holiday.entity
 
 import jakarta.persistence.*
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 
 /**
@@ -10,8 +11,8 @@ import java.time.LocalDate
  */
 @Entity
 class LastUpdateDateInfo(
-    @Column val name: String,
-    @Column val updateDate: LocalDate
+    @Column(unique = true) val typeName: String,
+    @Column val updateDate: LocalDateTime
 ) {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

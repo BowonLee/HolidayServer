@@ -3,7 +3,6 @@ package lee.bowon.holiday.service
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature
-import com.fasterxml.jackson.databind.cfg.CoercionConfig
 import com.fasterxml.jackson.dataformat.xml.JacksonXmlModule
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -13,7 +12,6 @@ import lee.bowon.holiday.constant.END_POINT_URL
 import lee.bowon.holiday.dto.*
 import lee.bowon.holiday.entity.Holiday
 import lee.bowon.holiday.exception.HolidayApiRequestFailException
-import org.apache.juli.logging.Log
 import org.springframework.http.*
 import org.springframework.http.converter.StringHttpMessageConverter
 import org.springframework.stereotype.Service
@@ -23,9 +21,6 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 import java.nio.charset.StandardCharsets
-import java.time.LocalDate
-import java.util.logging.Level
-import java.util.logging.Logger
 
 /**
  * 공식 API 센터를 통해 휴일 정보를 받아온다.
@@ -33,7 +28,7 @@ import java.util.logging.Logger
 @Service
 class HolidayClient {
 
-    fun getHolidayData(request: HolidayRequest): List<Holiday> {
+    fun getHolidayData(request: HolidayApiRequest): List<Holiday> {
         val rawResponse = requestData(request)
 
         return parseData(rawResponse.body!!).body.items.item.map {
@@ -74,7 +69,7 @@ class HolidayClient {
     }
 
 
-    private fun requestData(request: HolidayRequest): ResponseEntity<String> {
+    private fun requestData(request: HolidayApiRequest): ResponseEntity<String> {
         val restTemplate = RestTemplate()
         val httpHeaders = getHeader()
         val uri = generateUri(request)
@@ -91,7 +86,7 @@ class HolidayClient {
 
     }
 
-    private fun generateUri(request: HolidayRequest): URI{
+    private fun generateUri(request: HolidayApiRequest): URI{
         val httpBody: MultiValueMap<String, String> = LinkedMultiValueMap()
 
         httpBody["serviceKey"] = API_KEY

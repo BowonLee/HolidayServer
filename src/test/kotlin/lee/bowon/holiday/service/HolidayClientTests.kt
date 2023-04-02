@@ -1,6 +1,6 @@
 package lee.bowon.holiday.service
 
-import lee.bowon.holiday.dto.HolidayRequest
+import lee.bowon.holiday.dto.HolidayApiRequest
 import lee.bowon.holiday.dto.HolidayApiResponseItem
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -20,7 +20,7 @@ class HolidayClientTests {
 
     @Test
     fun response_empty() {
-        val request = HolidayRequest(2023, 1)
+        val request = HolidayApiRequest(2023, 1)
 
         val result = this.holidayClient.getHolidayData(request)
 
@@ -29,7 +29,7 @@ class HolidayClientTests {
 
     @Test
     fun response_ok() {
-        val request = HolidayRequest(2022, 10)
+        val request = HolidayApiRequest(2022, 10)
 
         val result = this.holidayClient.getHolidayData(request)
 

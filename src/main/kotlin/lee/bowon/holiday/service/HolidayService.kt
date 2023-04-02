@@ -2,12 +2,9 @@ package lee.bowon.holiday.service
 
 import kotlinx.coroutines.*
 import lee.bowon.holiday.config.HolidayCacheConfig
-import lee.bowon.holiday.dto.HolidayRequest
+import lee.bowon.holiday.dto.HolidayApiRequest
 import lee.bowon.holiday.entity.Holiday
-import lee.bowon.holiday.entity.LastUpdateDateInfo
 
-import lee.bowon.holiday.repository.LastUpdateDateInfoRepository
-import org.springframework.cache.CacheManager
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.util.logging.Level
@@ -44,6 +41,12 @@ class HolidayService(
         }
     }
 
+    fun getLastHolidayUpdate(): String {
+
+
+        return ""
+    }
+
     private fun updateListForTwoYear(): List<Holiday> {
 
 
@@ -59,7 +62,7 @@ class HolidayService(
                     async(Dispatchers.Default) {
                         listForTwoYears.addAll(
                             holidayClient.getHolidayData(
-                                HolidayRequest(nowYear + it/12, it%12 + 1)
+                                HolidayApiRequest(nowYear + it/12, it%12 + 1)
                             )
                         )
                     }
@@ -67,14 +70,15 @@ class HolidayService(
             }.awaitAll()
             Logger.getLogger("test").log(Level.INFO, "request end ${listForTwoYears.toList()}")
 
-            holidayStorageService.updateHolidayDataOfTwoYear(listForTwoYears.toList())
+
+            holidayStorageService.updateHolidayDataOfTwoYear(listForTwoYears.sortedBy { it.date })
         }
 
 
-        return listForTwoYears.toList()
+        return listForTwoYears.sortedBy { it.date }
     }
 
     private fun getHolidayListPerMonth(year: Int, month: Int): List<Holiday>
-            = holidayClient.getHolidayData(HolidayRequest(year,month))
+            = holidayClient.getHolidayData(HolidayApiRequest(year,month))
 
 }
