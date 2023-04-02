@@ -1,7 +1,9 @@
 package lee.bowon.holiday.service
 
 import lee.bowon.holiday.entity.Holiday
+import lee.bowon.holiday.entity.LastUpdateDateInfo
 import lee.bowon.holiday.repository.HolidayRepository
+import lee.bowon.holiday.repository.LastUpdateDateInfoRepository
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -10,7 +12,9 @@ import java.util.logging.Level
 import java.util.logging.Logger
 
 @Service
-class HolidayStorageService(private val holidayRepository: HolidayRepository) {
+class HolidayStorageService(
+    private val holidayRepository: HolidayRepository,
+    private val lastUpdateDateInfoRepository: LastUpdateDateInfoRepository) {
 
     /**
      * 당해기준 2년치의 정보 획득
@@ -26,6 +30,7 @@ class HolidayStorageService(private val holidayRepository: HolidayRepository) {
         if (isDataChanged(holidayList)) {
             holidayRepository.deleteAll()
             holidayRepository.saveAll(holidayList)
+            lastUpdateDateInfoRepository.save(LastUpdateDateInfo("holiday",LocalDate.now()))
         }
     }
 

@@ -4,6 +4,9 @@ import kotlinx.coroutines.*
 import lee.bowon.holiday.config.HolidayCacheConfig
 import lee.bowon.holiday.dto.HolidayRequest
 import lee.bowon.holiday.entity.Holiday
+import lee.bowon.holiday.entity.LastUpdateDateInfo
+
+import lee.bowon.holiday.repository.LastUpdateDateInfoRepository
 import org.springframework.cache.CacheManager
 import org.springframework.stereotype.Service
 import java.time.LocalDate
@@ -14,7 +17,7 @@ import java.util.logging.Logger
 class HolidayService(
     private val holidayClient: HolidayClient,
     private val holidayStorageService: HolidayStorageService,
-    private val cacheConfig: HolidayCacheConfig
+    private val cacheConfig: HolidayCacheConfig,
 ) {
 
     /**
@@ -66,6 +69,7 @@ class HolidayService(
 
             holidayStorageService.updateHolidayDataOfTwoYear(listForTwoYears.toList())
         }
+
 
         return listForTwoYears.toList()
     }
