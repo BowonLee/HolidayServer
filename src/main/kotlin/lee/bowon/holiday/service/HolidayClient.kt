@@ -23,6 +23,9 @@ import org.springframework.web.client.RestTemplate
 import org.springframework.web.util.UriComponentsBuilder
 import java.net.URI
 import java.nio.charset.StandardCharsets
+import java.time.LocalDate
+import java.util.logging.Level
+import java.util.logging.Logger
 
 /**
  * 공식 API 센터를 통해 휴일 정보를 받아온다.

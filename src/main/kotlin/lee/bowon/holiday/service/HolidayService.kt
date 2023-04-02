@@ -56,12 +56,14 @@ class HolidayService(
                     async(Dispatchers.Default) {
                         listForTwoYears.addAll(
                             holidayClient.getHolidayData(
-                                HolidayRequest(nowYear + it/13, it%12 + 1)
+                                HolidayRequest(nowYear + it/12, it%12 + 1)
                             )
                         )
                     }
                 }
             }.awaitAll()
+            Logger.getLogger("test").log(Level.INFO, "request end ${listForTwoYears.toList()}")
+
             holidayStorageService.updateHolidayDataOfTwoYear(listForTwoYears.toList())
         }
 

@@ -5,6 +5,9 @@ import lee.bowon.holiday.repository.HolidayRepository
 import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
+import java.util.logging.Level
+import java.util.logging.Logger
 
 @Service
 class HolidayStorageService(private val holidayRepository: HolidayRepository) {
@@ -19,6 +22,7 @@ class HolidayStorageService(private val holidayRepository: HolidayRepository) {
      */
     @Transactional
     fun updateHolidayDataOfTwoYear(holidayList: List<Holiday>) {
+        Logger.getLogger("test").log(Level.INFO, "update run")
         if (isDataChanged(holidayList)) {
             holidayRepository.deleteAll()
             holidayRepository.saveAll(holidayList)
