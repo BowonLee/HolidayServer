@@ -42,7 +42,7 @@ class HolidayStorageService(
         return holidayRepository.findAll()
     }
 
-    fun getLastUpdate(): Optional<LastUpdateDateInfo> {
+    fun getLastUpdate(): LastUpdateDateInfo? {
         return lastUpdateDateInfoRepository.findByTypeName(DataStorageType.HOLIDAY.name)
     }
 

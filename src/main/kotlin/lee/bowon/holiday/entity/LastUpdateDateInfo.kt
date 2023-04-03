@@ -11,12 +11,9 @@ import java.time.LocalDateTime
  */
 @Entity
 class LastUpdateDateInfo(
+    @Id
     @Column(unique = true) val typeName: String,
     @Column val updateDate: LocalDateTime
 ) {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    var id: Long = 0
 
 }

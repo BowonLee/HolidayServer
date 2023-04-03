@@ -1,7 +1,9 @@
 package lee.bowon.holiday.controller
 
-import lee.bowon.holiday.entity.Holiday
+import lee.bowon.holiday.dto.HolidayAppResponse
+import lee.bowon.holiday.entity.LastUpdateDateInfo
 import lee.bowon.holiday.service.HolidayService
+import lee.bowon.holiday.service.MetaDataInfoService
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -9,11 +11,17 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("api/holiday")
-class HolidayController(private val holidayService: HolidayService) {
+class HolidayController(
+    private val holidayService: HolidayService,
+    private val metaDataInfoService: MetaDataInfoService) {
 
     @PostMapping("list")
-    fun holidayList(): List<Holiday> {
-        return holidayService.getHolidayList()
+    fun holidayList(): HolidayAppResponse {
+
+        return HolidayAppResponse(
+            holidayList =  holidayService.getHolidayList(),
+            lastUpdateTime = metaDataInfoService.getHolidayUpdateDatetime()?.updateDate
+        )
     }
 
     /**
@@ -28,7 +36,7 @@ class HolidayController(private val holidayService: HolidayService) {
      * 서버에서 받아야 하는 정보들의 최종 업데이트 일자
      */
     @PostMapping("meta")
-    fun metaData() {
-
+    fun metaData(): List<LastUpdateDateInfo> {
+        return metaDataInfoService.getLastUpdateInfoList()
     }
 }
