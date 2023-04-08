@@ -5,19 +5,17 @@ import lee.bowon.holiday.entity.LastUpdateDateInfo
 import lee.bowon.holiday.enum.DataStorageType
 import lee.bowon.holiday.repository.HolidayRepository
 import lee.bowon.holiday.repository.LastUpdateDateInfoRepository
-import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.util.*
 import java.util.logging.Level
 import java.util.logging.Logger
 
 @Service
 class HolidayStorageService(
     private val holidayRepository: HolidayRepository,
-    private val lastUpdateDateInfoRepository: LastUpdateDateInfoRepository) {
+    private val lastUpdateDateInfoRepository: LastUpdateDateInfoRepository
+) {
 
     /**
      * 당해기준 2년치의 정보 획득
@@ -29,27 +27,24 @@ class HolidayStorageService(
      */
     @Transactional
     fun updateHolidayDataOfTwoYear(holidayList: List<Holiday>) {
-        Logger.getLogger("test").log(Level.INFO, "update run")
-        if (isDataChanged(holidayList)) {
+        if (isNeedUpdate(holidayList)) {
+            Logger.getLogger("test").log(Level.INFO, "update run")
             holidayRepository.deleteAll()
             holidayRepository.saveAll(holidayList)
             lastUpdateDateInfoRepository.save(LastUpdateDateInfo(DataStorageType.HOLIDAY.name, LocalDateTime.now()))
         }
     }
 
-    @Cacheable("holidays")
+
     fun getHolidays(): List<Holiday> {
         return holidayRepository.findAll()
     }
 
-    fun getLastUpdate(): LastUpdateDateInfo? {
-        return lastUpdateDateInfoRepository.findByTypeName(DataStorageType.HOLIDAY.name)
-    }
+    private fun isNeedUpdate(holidayList: List<Holiday>): Boolean {
+        val storedList = holidayRepository.findAll();
 
-    private fun isDataChanged(holidayList: List<Holiday>): Boolean {
-        return holidayRepository.findAll() != holidayList
+        return storedList.isEmpty() || storedList != holidayList
     }
-
 
 
 }

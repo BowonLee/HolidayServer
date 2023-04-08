@@ -4,7 +4,7 @@ import kotlinx.coroutines.*
 import lee.bowon.holiday.config.HolidayCacheConfig
 import lee.bowon.holiday.dto.HolidayApiRequest
 import lee.bowon.holiday.entity.Holiday
-
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import java.time.LocalDate
 import java.util.logging.Level
@@ -33,6 +33,7 @@ class HolidayService(
      * 휴일 정보를 가져온다.
      * 저장된 정보가 없을 시 데이터 셋팅 후 재시도 하도록 한다.
      */
+    @Cacheable(HolidayCacheConfig.HOLIDAY_LIST_CACHE)
     fun getHolidayList(): List<Holiday> {
         val holidayList = holidayStorageService.getHolidays()
 
@@ -41,16 +42,9 @@ class HolidayService(
         }
     }
 
-    fun getLastHolidayUpdate(): String {
-
-
-        return ""
-    }
-
     private fun updateListForTwoYear(): List<Holiday> {
-
-
-        cacheConfig.cacheManager().getCache("holidayList")?.clear()
+        cacheConfig.cacheManager().getCache(HolidayCacheConfig.HOLIDAY_LIST_CACHE)?.clear()
+        cacheConfig.cacheManager().getCache(HolidayCacheConfig.LAST_UPDATE_CACHE)?.clear()
 
         Logger.getLogger("test").log(Level.INFO, "update time : ${LocalDate.now()}")
         val nowYear = LocalDate.now().year
@@ -58,11 +52,11 @@ class HolidayService(
 
         runBlocking {
             coroutineScope {
-                ( 0..23).map {
+                (0..23).map {
                     async(Dispatchers.Default) {
                         listForTwoYears.addAll(
                             holidayClient.getHolidayData(
-                                HolidayApiRequest(nowYear + it/12, it%12 + 1)
+                                HolidayApiRequest(nowYear + it / 12, it % 12 + 1)
                             )
                         )
                     }
@@ -78,7 +72,7 @@ class HolidayService(
         return listForTwoYears.sortedBy { it.date }
     }
 
-    private fun getHolidayListPerMonth(year: Int, month: Int): List<Holiday>
-            = holidayClient.getHolidayData(HolidayApiRequest(year,month))
+    private fun getHolidayListPerMonth(year: Int, month: Int): List<Holiday> =
+        holidayClient.getHolidayData(HolidayApiRequest(year, month))
 
 }
