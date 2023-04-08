@@ -6,9 +6,8 @@ import jakarta.persistence.Id
 import java.time.LocalDate
 
 
-
 @Entity
-data class Holiday(
+class Holiday(
     @Id
     @Column(nullable = false)
     val date: LocalDate,
@@ -17,6 +16,6 @@ data class Holiday(
     @Column(length = 10)
     val dateKind: String,
     val isHoliday: Boolean = true
-    )
+)
 
 

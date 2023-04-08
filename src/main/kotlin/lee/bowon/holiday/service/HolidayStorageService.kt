@@ -37,7 +37,11 @@ class HolidayStorageService(
     private fun isNeedUpdate(holidayList: List<Holiday>): Boolean {
         val storedList = holidayRepository.findAll();
 
-        return storedList.isEmpty() || storedList != holidayList
+        if (storedList.isEmpty()) {
+            return true
+        }
+
+        return storedList != holidayList
     }
 
 

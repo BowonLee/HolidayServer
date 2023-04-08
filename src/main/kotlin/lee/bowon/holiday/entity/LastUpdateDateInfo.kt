@@ -1,7 +1,8 @@
 package lee.bowon.holiday.entity
 
-import jakarta.persistence.*
-import java.time.LocalDate
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Id
 import java.time.LocalDateTime
 
 
@@ -13,7 +14,7 @@ import java.time.LocalDateTime
 class LastUpdateDateInfo(
     @Id
     @Column(unique = true) val typeName: String,
-    @Column val updateDate: LocalDateTime
+    @Column val updateDateTime: LocalDateTime
 ) {
 
 }

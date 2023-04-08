@@ -20,7 +20,7 @@ class HolidayController(
 
         return HolidayAppResponse(
             holidayList = holidayService.getHolidayList(),
-            lastUpdateTime = metaDataStorageService.getHolidayUpdateDatetime()?.updateDate
+            lastUpdateTime = metaDataStorageService.getHolidayUpdateDatetime()?.updateDateTime
         )
     }
 
