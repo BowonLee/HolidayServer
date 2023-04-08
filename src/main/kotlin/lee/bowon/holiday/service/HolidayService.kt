@@ -1,7 +1,7 @@
 package lee.bowon.holiday.service
 
 import kotlinx.coroutines.*
-import lee.bowon.holiday.config.HolidayCacheConfig
+import lee.bowon.holiday.config.CustomCacheConfig
 import lee.bowon.holiday.dto.HolidayApiRequest
 import lee.bowon.holiday.entity.Holiday
 import org.springframework.cache.annotation.Cacheable
@@ -14,7 +14,8 @@ import java.util.logging.Logger
 class HolidayService(
     private val holidayClient: HolidayClient,
     private val holidayStorageService: HolidayStorageService,
-    private val cacheConfig: HolidayCacheConfig,
+    private val customCacheConfig: CustomCacheConfig,
+    private val metaDataStorageService: MetaDataStorageService
 ) {
 
     /**
@@ -33,7 +34,7 @@ class HolidayService(
      * 휴일 정보를 가져온다.
      * 저장된 정보가 없을 시 데이터 셋팅 후 재시도 하도록 한다.
      */
-    @Cacheable(HolidayCacheConfig.HOLIDAY_LIST_CACHE)
+    @Cacheable(CustomCacheConfig.HOLIDAY_LIST_CACHE)
     fun getHolidayList(): List<Holiday> {
         val holidayList = holidayStorageService.getHolidays()
 
@@ -43,8 +44,9 @@ class HolidayService(
     }
 
     private fun updateListForTwoYear(): List<Holiday> {
-        cacheConfig.cacheManager().getCache(HolidayCacheConfig.HOLIDAY_LIST_CACHE)?.clear()
-        cacheConfig.cacheManager().getCache(HolidayCacheConfig.LAST_UPDATE_CACHE)?.clear()
+        customCacheConfig.cacheManager().getCache(CustomCacheConfig.HOLIDAY_LIST_CACHE)?.clear()
+        customCacheConfig.cacheManager().getCache(CustomCacheConfig.LAST_UPDATE_CACHE)?.clear()
+        customCacheConfig.cacheManager().getCache(CustomCacheConfig.LAST_UPDATE_DATE_LIST_CACHE)?.clear()
 
         Logger.getLogger("test").log(Level.INFO, "update time : ${LocalDate.now()}")
         val nowYear = LocalDate.now().year
@@ -66,6 +68,8 @@ class HolidayService(
 
 
             holidayStorageService.updateHolidayDataOfTwoYear(listForTwoYears.sortedBy { it.date })
+            metaDataStorageService.updateHolidayUpdateDateTime();
+
         }
 
 

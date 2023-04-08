@@ -1,20 +1,15 @@
 package lee.bowon.holiday.service
 
 import lee.bowon.holiday.entity.Holiday
-import lee.bowon.holiday.entity.LastUpdateDateInfo
-import lee.bowon.holiday.enum.DataStorageType
 import lee.bowon.holiday.repository.HolidayRepository
-import lee.bowon.holiday.repository.LastUpdateDateInfoRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.time.LocalDateTime
 import java.util.logging.Level
 import java.util.logging.Logger
 
 @Service
 class HolidayStorageService(
-    private val holidayRepository: HolidayRepository,
-    private val lastUpdateDateInfoRepository: LastUpdateDateInfoRepository
+    private val holidayRepository: HolidayRepository
 ) {
 
     /**
@@ -31,7 +26,6 @@ class HolidayStorageService(
             Logger.getLogger("test").log(Level.INFO, "update run")
             holidayRepository.deleteAll()
             holidayRepository.saveAll(holidayList)
-            lastUpdateDateInfoRepository.save(LastUpdateDateInfo(DataStorageType.HOLIDAY.name, LocalDateTime.now()))
         }
     }
 
